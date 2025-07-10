@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../UI/Button';
@@ -6,7 +5,7 @@ import Input from '../UI/Input';
 import SocialAuth from './SocialAuth';
 import img from '../../assets/0.png';
 
-const Register = ({ onRegister }) => {
+const Register = ({ onRegister, error, isLoading }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,7 +13,7 @@ const Register = ({ onRegister }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords don't match!");
+      onRegister(email, password, "Passwords don't match!");
       return;
     }
     onRegister(email, password);
@@ -23,7 +22,7 @@ const Register = ({ onRegister }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white rounded-lg shadow-md overflow-hidden w-full max-w-md md:max-w-4xl">
-        <div className="flex flex-col  md:flex-row h-full">
+        <div className="flex flex-col md:flex-row h-full">
           
           <div className="w-full md:w-1/3 h-64 md:h-auto relative overflow-hidden">
             <img 
@@ -33,8 +32,13 @@ const Register = ({ onRegister }) => {
             />
           </div>
           
-          <div className="w-full  md:w-2/3 p-6 md:p-8">
+          <div className="w-full md:w-2/3 p-6 md:p-8">
             <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-center">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit}>
               <Input
                 label="Email address"
@@ -49,7 +53,7 @@ const Register = ({ onRegister }) => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="must be a distraction"
+                placeholder="Must be at least 6 characters"
                 required
               />
               <Input
@@ -57,7 +61,7 @@ const Register = ({ onRegister }) => {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="request password"
+                placeholder="Confirm your password"
                 required
               />
               
@@ -65,8 +69,9 @@ const Register = ({ onRegister }) => {
                 <Button 
                   type="submit" 
                   className="w-full md:w-3/4 px-6 py-3"
+                  disabled={isLoading}
                 >
-                  Create Account
+                  {isLoading ? 'Creating account...' : 'Create Account'}
                 </Button>
               </div>
             </form>

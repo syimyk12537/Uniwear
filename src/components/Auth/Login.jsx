@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../UI/Button';
@@ -6,7 +5,7 @@ import Input from '../UI/Input';
 import SocialAuth from './SocialAuth';
 import img from '../../assets/0.png';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, error, isLoading }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -19,7 +18,7 @@ const Login = ({ onLogin }) => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-white rounded-lg shadow-md overflow-hidden w-full max-w-md md:max-w-4xl">
         <div className="flex flex-col md:flex-row h-full">
-       
+          
           <div className="w-full md:w-1/3 h-64 md:h-auto relative overflow-hidden">
             <img 
               src={img}
@@ -30,6 +29,11 @@ const Login = ({ onLogin }) => {
           
           <div className="w-full md:w-2/3 p-6 md:p-8">
             <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-center">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit}>
               <Input
                 label="Email address"
@@ -48,12 +52,13 @@ const Login = ({ onLogin }) => {
                 required
               />
               
-              <div className="flex justify-center mt-15">
+              <div className="flex justify-center mt-6">
                 <Button 
                   type="submit" 
                   className="w-full md:w-3/4 px-6 py-3"
+                  disabled={isLoading}
                 >
-                  Login
+                  {isLoading ? 'Signing in...' : 'Login'}
                 </Button>
               </div>
             </form>
@@ -61,7 +66,7 @@ const Login = ({ onLogin }) => {
             <SocialAuth />
             <p className="mt-4 text-center">
               Don't have an account?{' '}
-              <Link to="/register" className="text-black font-medium">
+              <Link to="/register" className="text-blue-600 font-medium">
                 Register
               </Link>
             </p>

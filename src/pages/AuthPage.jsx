@@ -8,35 +8,55 @@ import Register from '../components/Auth/Register';
 
 const AuthPage = ({ type = 'login' }) => {
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = async (email, password) => {
+  const handleAuth = async (authFn, email, password, customError) => {
+    setIsLoading(true);
+    setError('');
     try {
-      const user = await loginWithEmail(email, password);
-      dispatch(signInSuccess(user));
+      const user = await authFn(email, password);
+      dispatch(signInSuccess({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || user.email.split('@')[0]
+      }));
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError(customError || err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleRegister = async (email, password) => {
-    try {
-      const user = await registerWithEmail(email, password);
-      dispatch(signInSuccess(user));
-      navigate('/');
-    } catch (err) {
-      setError(err.message);
+  const handleLogin = (email, password) => {
+    handleAuth(loginWithEmail, email, password);
+  };
+
+  const handleRegister = (email, password, customError) => {
+    if (customError) {
+      setError(customError);
+      setIsLoading(false);
+      return;
     }
+    handleAuth(registerWithEmail, email, password);
   };
 
   return (
     <div>
       {type === 'login' ? (
-        <Login onLogin={handleLogin} error={error} />
+        <Login 
+          onLogin={handleLogin} 
+          error={error} 
+          isLoading={isLoading} 
+        />
       ) : (
-        <Register onRegister={handleRegister} error={error} />
+        <Register 
+          onRegister={handleRegister} 
+          error={error} 
+          isLoading={isLoading} 
+        />
       )}
     </div>
   );
